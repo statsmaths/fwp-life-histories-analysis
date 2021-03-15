@@ -4,7 +4,7 @@ library(stringi)
 
 options(dplyr.summarise.inform = FALSE)
 
-# cp output/geo/*.json ~/gh/voice-of-a-nation/public/data/geo/
+# cp output/geo/*.json ~/gh/writing-their-voices/public/data/geo/
 
 ###############################################################################
 bp <- file.path("..", "fwp-life-histories", "csv")
@@ -70,16 +70,20 @@ dt <- dt %>%
 ###############################################################################
 # Map 1: 'All Interviews' => geo_all.json
 
+col_def <- "#7A9D96"
+
 z <- dt %>%
   group_by(lon, lat, state, city) %>%
   mutate(n = n()) %>%
+  mutate(wname = if_else(is.na(writer), "Unknown", writer)) %>%
+  mutate(title = sprintf("%s — %s", title, wname)) %>%
   select(lon, lat, state, city, n, id, title) %>%
   nest(links = c(id, title)) %>%
   mutate(size = (4 + round(sqrt(n - 1))) * 1) %>%
   mutate(
     title = sprintf("%s, %s", city, state),
     subtitle = sprintf("Count: %d", n),
-    color = "#009900"
+    color = col_def
   ) %>%
   ungroup() %>%
   select(lon, lat, size, color, title, subtitle, links) %>%
@@ -102,6 +106,8 @@ z <- dt %>%
   mutate(writer_id = match(writer, top_writers)) %>%
   group_by(lon, lat, state, city, writer, writer_id) %>%
   mutate(n = n()) %>%
+  mutate(wname = if_else(is.na(writer), "Unknown", writer)) %>%
+  mutate(title = sprintf("%s — %s", title, wname)) %>%
   select(lon, lat, state, city, writer, writer_id, n, id, title) %>%
   nest(links = c(id, title)) %>%
   mutate(size = (4 + round(sqrt(n - 1))) * 1) %>%
@@ -129,13 +135,15 @@ z <- dt %>%
   filter(gender == "female") %>%
   group_by(lon, lat, state, city) %>%
   mutate(n = n()) %>%
+  mutate(wname = if_else(is.na(writer), "Unknown", writer)) %>%
+  mutate(title = sprintf("%s — %s", title, wname)) %>%
   select(lon, lat, state, city, n, id, title) %>%
   nest(links = c(id, title)) %>%
   mutate(size = (4 + round(sqrt(n - 1))) * 1) %>%
   mutate(
     title = sprintf("%s, %s", city, state),
     subtitle = sprintf("Count: %d", n),
-    color = "#009900"
+    color = col_def
   ) %>%
   ungroup() %>%
   select(lon, lat, size, color, title, subtitle, links) %>%
@@ -152,13 +160,15 @@ z <- dt %>%
   filter(race == "black") %>%
   group_by(lon, lat, state, city) %>%
   mutate(n = n()) %>%
+  mutate(wname = if_else(is.na(writer), "Unknown", writer)) %>%
+  mutate(title = sprintf("%s — %s", title, wname)) %>%
   select(lon, lat, state, city, n, id, title) %>%
   nest(links = c(id, title)) %>%
   mutate(size = (4 + round(sqrt(n - 1))) * 1) %>%
   mutate(
     title = sprintf("%s, %s", city, state),
     subtitle = sprintf("Count: %d", n),
-    color = "#009900"
+    color = col_def
   ) %>%
   ungroup() %>%
   select(lon, lat, size, color, title, subtitle, links) %>%
@@ -171,13 +181,15 @@ write_lines(json_obj, file.path("output", "geo", "geo_black_writers.json"))
 # Map 5: 'Interviewee Ethnicity' => geo_ethnic.json
 
 ethnic_set <- c("Greek", "Cuban", "Chinese")
-col_set <- c("#005FA7", "#7AAE82", "#005FA7")
+col_set <- c("#FFB646", "#7AAE82", "#005FA7")
 
 z <- dt %>%
   filter(ethnicity %in% ethnic_set) %>%
   mutate(ethnic_id = match(ethnicity, ethnic_set)) %>%
   group_by(lon, lat, state, city, ethnicity, ethnic_id) %>%
   mutate(n = n()) %>%
+  mutate(wname = if_else(is.na(writer), "Unknown", writer)) %>%
+  mutate(title = sprintf("%s — %s", title, wname)) %>%
   select(lon, lat, state, city, ethnicity, ethnic_id, n, id, title) %>%
   nest(links = c(id, title)) %>%
   mutate(size = (4 + round(sqrt(n - 1))) * 1) %>%
@@ -210,6 +222,8 @@ z <- dt %>%
   mutate(occ_id = match(occ, top_occ)) %>%
   group_by(lon, lat, state, city, occ, occ_id) %>%
   mutate(n = n()) %>%
+  mutate(wname = if_else(is.na(writer), "Unknown", writer)) %>%
+  mutate(title = sprintf("%s — %s", title, wname)) %>%
   select(lon, lat, state, city, occ, occ_id, n, id, title) %>%
   nest(links = c(id, title)) %>%
   mutate(size = (4 + round(sqrt(n - 1))) * 1) %>%

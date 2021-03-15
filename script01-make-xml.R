@@ -28,11 +28,15 @@ writer <- read_csv(file.path(bp, "writer.csv"), col_types = cols()
 writer_crosswalk <- read_csv(
   file.path(bp, "writer_crosswalk.csv"), col_types = cols()
 )
+folder <- read_csv(
+  file.path(bp, "folder.csv"), col_types = cols()
+)
 
 template <- '<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="../lifehistory.xsl" ?>
 <history>
   <title>%s</title>
+  <reflink>%s</reflink>
   <meta>
     %s
   </meta>
@@ -104,6 +108,7 @@ meta <- interview %>%
   left_join(writ, by = 'id') %>%
   left_join(revi, by = 'id') %>%
   left_join(interv, by = 'id') %>%
+  left_join(folder, by = 'folder') %>%
   mutate(date = sprintf("%04d-%02d-%02d",
                         interview_year, interview_month, interview_day)) %>%
   mutate(date = stri_replace_all(date, "", fixed = "-NA")) %>%
@@ -153,7 +158,7 @@ for (j in seq_len(nrow(meta)))
   }
   items <- paste(items, collapse = "\n")
 
-  xml_text <- sprintf(template, meta$title[j], items, x)
+  xml_text <- sprintf(template, meta$title[j], meta$ref_link[j], items, x)
   xml_doc <- read_xml(xml_text)
   write_xml(xml_doc, ofile)
 }

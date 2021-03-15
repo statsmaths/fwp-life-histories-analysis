@@ -211,16 +211,16 @@ make_topic_data_json <- function(lda)
       name=sprintf("Topic %d", i),
       description=sprintf("Topic %d: %s", i, top_words[i]),
       proportion=corp_topics[i],
-      proportion_black=round(mean(
+      race=round(mean(
         interview$race[doc_largest == i] == "Black", na.rm = TRUE
       ) * 100),
-      proportion_women=round(mean(
+      gender=round(mean(
         interview$gender[doc_largest == i] == "Female", na.rm = TRUE
       ) * 100),
-      proportion_black_writer=round(mean(
+      race_writer=round(mean(
         interview$race_writer[doc_largest == i] == "Black", na.rm = TRUE
       ) * 100),
-      proportion_women_writer=round(mean(
+      gender_writer=round(mean(
         interview$gender_writer[doc_largest == i] == "Female", na.rm = TRUE
       ) * 100)
     )
@@ -305,7 +305,6 @@ make_cluster_data_json <- function(clust)
       paste(v[1:4], collapse = ", ")
     })
     top_terms_clust[to_long] <- t4[to_long]
-    stop(top_terms_clust[to_long])
   }
 
   # Read in the processed data
@@ -319,16 +318,16 @@ make_cluster_data_json <- function(clust)
       name=sprintf("Cluster %d", i),
       description=sprintf("Cluster %d: %s", i, top_terms_clust[i]),
       proportion=round(mean(doc_df$cluster == i) * 100),
-      proportion_black=round(mean(
+      race=round(mean(
         doc_df$race[doc_df$cluster == i] == "Black", na.rm = TRUE
       ) * 100),
-      proportion_women=round(mean(
+      gender=round(mean(
         doc_df$gender[doc_df$cluster == i] == "Female", na.rm = TRUE
       ) * 100),
-      proportion_black_writer=round(mean(
+      race_writer=round(mean(
         doc_df$race_writer[doc_df$cluster == i] == "Black", na.rm = TRUE
       ) * 100),
-      proportion_women_writer=round(mean(
+      gender_writer=round(mean(
         doc_df$gender_writer[doc_df$cluster == i] == "Female", na.rm = TRUE
       ) * 100)
     )
